@@ -68,7 +68,7 @@ def export_consistency_by_glasser_area():
 
 def plot_brain_encoding_whole_brain(use_raw_consistency_metric: bool = False, 
                                     divide_by_noise_ceiling: bool = False):
-    # Fig. 3, 11
+    # Fig. 3, 9
     sns.set_style("ticks", {"font.family": "sans-serif", "font.sans-serif": ["Helvetica"]})
 
     glasser_map, glasser_labels_dict = load_glasser_parcellation()
@@ -88,7 +88,7 @@ def plot_brain_encoding_whole_brain(use_raw_consistency_metric: bool = False,
                 betas_fname = f"outputs/brain_encoding_whole_brain/betas_{paradigm}_{participant_id}.csv"
                 betas_df = pd.concat([betas_df, pd.read_csv(betas_fname)], ignore_index=True)
 
-            betas_df = betas_df.drop(columns=["roi", "id"])
+            betas_df = betas_df.drop(columns=["voxel_population", "id"])
             betas_df.set_index(["stimulus", "concept", "stimulus_idx", "paradigm", "parcel"], inplace=True)
 
             for parcel_idx, parcel_name in glasser_labels_dict.items():
@@ -122,7 +122,7 @@ def plot_brain_encoding_whole_brain(use_raw_consistency_metric: bool = False,
                     continue
                 df_uid = pd.read_csv(fname)
                 df_predict = pd.concat([df_predict, df_uid], ignore_index=True)
-        df_predict = df_predict.drop(columns=["roi"])
+        df_predict = df_predict.drop(columns=["voxel_population"])
 
         df_all = pd.DataFrame()
         for parcel in df_predict["parcel"].unique():
@@ -185,11 +185,9 @@ def plot_brain_encoding_whole_brain(use_raw_consistency_metric: bool = False,
                 f"{'_nc' if divide_by_noise_ceiling else ''}.pdf", 
         format="pdf", bbox_inches='tight', dpi=300)
 
-plot_brain_encoding_whole_brain(divide_by_noise_ceiling=True)
-exit()
 
 def plot_brain_encoding_quartiles_single_model(model: str):
-    # Fig. 13-27
+    # Fig. 15-29
     sns.set_style("ticks", {"font.family": "sans-serif", "font.sans-serif": ["Helvetica"]})
     parcel_names = ["ROI 1", "ROI 2", "ROI 3"]
     is_vlm = MODEL_CONFIGS[model].is_vlm
@@ -213,13 +211,14 @@ def plot_brain_encoding_quartiles_single_model(model: str):
             df = pd.concat([df, df_participant], ignore_index=True)
 
         df = df.drop(columns=["best_layer", "best_pooling", "alpha"])
-        df = df.groupby(["id", "parcel", "roi"]).mean().reset_index()
-        df["cons_q"] = df["roi"].apply(lambda x: literal_eval(x)[0])
-        df["lang_q"] = df["roi"].apply(lambda x: literal_eval(x)[1])
+        df = df.groupby(["id", "parcel", "voxel_population"]).mean().reset_index()
+        df["cons_q"] = df["voxel_population"].apply(lambda x: literal_eval(x)[0])
+        df["lang_q"] = df["voxel_population"].apply(lambda x: literal_eval(x)[1])
 
         for parcel in parcel_names:
             for lang_q in range(1, 5):
                 df_q = df.query("parcel == @parcel and lang_q == @lang_q")
+                print(df_q)
                 corr = df_q[["pearsonr", "cons_q"]].corr().values[0,1]
                 corrs_red[parcel].append(corr)
             for cons_q in range(1, 5):
@@ -320,9 +319,9 @@ def plot_brain_encoding_quartiles():
                 df = pd.concat([df, df_participant], ignore_index=True)
 
         df = df.drop(columns=["best_layer", "best_pooling", "alpha"])
-        df = df.groupby(["id", "parcel", "roi"]).mean().reset_index()
-        df["cons_q"] = df["roi"].apply(lambda x: literal_eval(x)[0])
-        df["lang_q"] = df["roi"].apply(lambda x: literal_eval(x)[1])
+        df = df.groupby(["id", "parcel", "voxel_population"]).mean().reset_index()
+        df["cons_q"] = df["voxel_population"].apply(lambda x: literal_eval(x)[0])
+        df["lang_q"] = df["voxel_population"].apply(lambda x: literal_eval(x)[1])
         
         for i, parcel in enumerate(parcel_names):
             ax = axes[i, 2*j]
@@ -390,6 +389,7 @@ def plot_brain_encoding_quartiles():
 
 
 def plot_brain_encoding_quartiles_heatmap():
+    # Fig. 12
     sns.set_style("ticks", {"font.family": "sans-serif", "font.sans-serif": ["Helvetica"]})
     parcel_names = ["ROI 1", "ROI 2", "ROI 3"]
     annot = True
@@ -408,13 +408,13 @@ def plot_brain_encoding_quartiles_heatmap():
                 df_participant["model"] = model
                 df = pd.concat([df, df_participant], ignore_index=True)
 
-        df["cons_q"] = df["roi"].apply(lambda x: int(literal_eval(x)[0]))
-        df["lang_q"] = df["roi"].apply(lambda x: int(literal_eval(x)[1]))
+        df["cons_q"] = df["voxel_population"].apply(lambda x: int(literal_eval(x)[0]))
+        df["lang_q"] = df["voxel_population"].apply(lambda x: int(literal_eval(x)[1]))
     
         for i, parcel_name in enumerate(parcel_names):
             ax = axes[i, j]
             df_parcel = df.query(f"parcel == @parcel_name")
-            df_parcel = df_parcel.groupby(["roi"]).mean(numeric_only=True).reset_index()
+            df_parcel = df_parcel.groupby(["voxel_population"]).mean(numeric_only=True).reset_index()
             df_parcel["cons_q"] = df_parcel["cons_q"].astype(int)
             df_parcel["lang_q"] = df_parcel["lang_q"].astype(int)
             df_parcel = df_parcel.pivot_table(index="cons_q", columns="lang_q", values="pearsonr")
@@ -434,7 +434,7 @@ def plot_brain_encoding_quartiles_heatmap():
 
 
 def plot_brain_encoding_by_layer(pooling_method: str):
-    # Fig. 9-10
+    # Fig. 10-11
     sns.set_style("whitegrid", {"axes.edgecolor": ".0", "axes.facecolor":"none", 
                                 "font.family": "sans-serif", "font.sans-serif": ["Helvetica"]})
     fig, axes = plt.subplots(3, 3, figsize=(15, 13), sharey=True, sharex=False)
@@ -446,7 +446,7 @@ def plot_brain_encoding_by_layer(pooling_method: str):
                 continue
             df_cv = pd.read_csv(f"outputs/brain_encoding_quartiles/cv_scores_{paradigm}_{model_name}.csv")
             df_filtered = df_cv.query(f"pooling == '{pooling_method}'").\
-                drop(columns=['roi', 'pooling', 'alpha'])
+                drop(columns=['voxel_population', 'pooling', 'alpha'])
             df_filtered["paradigm"] = paradigm
             df_filtered["model"] = MODEL_FULL_NAMES[model_name]
             df_filtered["style"] = "Qwen2.5"
@@ -505,7 +505,7 @@ def plot_brain_encoding_by_layer(pooling_method: str):
 
 
 def plot_rsa(sig_sem_cons_voxels_only: bool = False):
-    # Fig. 5, 29
+    # Fig. 5, 14
     sns.set_style("ticks", {"font.family": "sans-serif", "font.sans-serif": ["Helvetica"]})
     df_scores = pd.DataFrame()
     for model in MODEL_CONFIGS:
@@ -623,7 +623,7 @@ def plot_rsa(sig_sem_cons_voxels_only: bool = False):
 
 
 def lang_network_vs_sem_cons_rois():
-    # Fig. 28
+    # Fig. 13
     fs = 10
     sns.set_theme(style="ticks", rc={"font.size": fs, "axes.titlesize": fs, 
                                      "axes.labelsize": fs+2,
@@ -675,7 +675,7 @@ def lang_network_vs_sem_cons_rois():
                     continue
                 df_uid = pd.read_csv(fname)
                 df_predict = pd.concat([df_predict, df_uid], ignore_index=True)
-        df_predict = df_predict.drop(columns=["roi"])
+        df_predict = df_predict.drop(columns=["voxel_population"])
 
         df_all = pd.DataFrame()
 

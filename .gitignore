@@ -1,0 +1,13 @@
+__pycache__
+
+data/stimuli/images/
+data/brain_parcels/
+data/GLMsingle_outputs/
+
+outputs/*
+!outputs/semantic_consistency/
+!outputs/roi_map*
+
+logs
+
+**/.DS_Store
