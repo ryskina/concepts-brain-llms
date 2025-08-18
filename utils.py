@@ -31,7 +31,6 @@ CONCEPTS = ['Ability', 'Accomplished', 'Angry', 'Apartment', 'Applause', 'Argume
 
 PARTICIPANT_IDS = [f"M{i:02d}" for i in range(1, 18)]
 
-LANGUAGE_PARCELS_NII_PATH = "data/brain_parcels/allParcels_language.nii" # downloaded from https://www.evlab.mit.edu/resources-all/download-parcels
 GLASSER_PARCELS_NII_PATH = "data/brain_parcels/HCP-MMP1_on_MNI152_ICBM2009a_nlin.nii.gz" # downloaded from https://figshare.com/articles/dataset/HCP-MMP1_0_projected_on_MNI2009a_GM_volumetric_in_NIfTI_format/3501911
 GLASSER_PARCEL_NAMES_PATH = f"data/brain_parcels/HCP-MMP1_on_MNI152_ICBM2009a_nlin.txt" # downloaded from https://figshare.com/articles/dataset/HCP-MMP1_0_projected_on_MNI2009a_GM_volumetric_in_NIfTI_format/3501911
 BRAIN_MASK_NII_PATH = "data/brain_parcels/mask.volume.brainmask.nii" # downloaded from https://github.com/alfnie/conn/blob/master/utils/surf/mask.volume.brainmask.nii
