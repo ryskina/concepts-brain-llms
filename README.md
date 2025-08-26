@@ -1,7 +1,5 @@
 Code and data for the paper ["Language models align with brain regions that represent concepts across modalities"](https://arxiv.org/abs/2508.11536) (COLM 2025)
 
-🛠️ Under construction, more info coming soon!
-
 ## Downloading data
 
 * The per-participant fMRI data (processed with [GLMsingle](https://github.com/cvnlab/GLMsingle/tree/main)) can be downloaded from [this Google Drive link](https://drive.google.com/drive/folders/1td7k_5UbkQ4jsNtt5yqLOB8Cm50GBzLd?usp=sharing) _(warning: large files!)_ <br>
@@ -48,7 +46,7 @@ The resulting semantic consistency ROI map (below) used in this work is stored a
 ```
 python brain_encoding_whole_brain.py --step save_betas --paradigm sentences --id M01
 ```
-2. After Step 1 is done for all participants, perform cross-validation to choose the best performing model layer and pooling for each paradigm (e.g., `sentences`) and model (e.g., `gpt2-xl`):
+2. After Step 1 is done for all participants, perform cross-validation to choose the best performing model layer and pooling per area for each paradigm (e.g., `sentences`) and model (e.g., `gpt2-xl`):
 ```
 python brain_encoding_whole_brain.py --step choose_best_layer --paradigm sentences --model gpt2-xl
 ```
@@ -56,6 +54,40 @@ python brain_encoding_whole_brain.py --step choose_best_layer --paradigm sentenc
 ```
 python brain_encoding_whole_brain.py --step predict --paradigm sentences --model gpt2-xl --id M01
 ```
+
+## Running experiments: quartile-based brain encoding
+
+1. Save activations in the semantic consistency ROIs for each participant (e.g., `M01`) and paradigm (e.g., `sentences`):
+```
+python brain_encoding_quartiles.py --step save_betas --paradigm sentences --id M01
+```
+2. For each participant (e.g., `M01`), save the values of semantic consistency and language selectivity in each voxel within the semantic consistency ROIs (used to select quartiles):
+```
+python brain_encoding_quartiles.py --step save_metrics --id M01
+```
+3. After Step 1 is done for all participants, perform cross-validation to choose the best performing model layer and pooling per ROI for each paradigm (e.g., `sentences`) and model (e.g., `gpt2-xl`):
+```
+python brain_encoding_quartiles.py --step choose_best_layer --paradigm sentences --model gpt2-xl
+```
+4. For the best layer and pooling, predict activations in each voxel quartile for each participant (e.g., `M01`), model (e.g., `gpt2-xl`), and paradigm (e.g., `sentences`):
+```
+python brain_encoding_quartiles.py --step predict --paradigm sentences --model gpt2-xl --id M01
+```
+
+## Running experiments: RSA
+
+1. Save whole-brain activations for each participant (e.g., `M01`) and paradigm (e.g., `sentences`):
+```
+python rsa.py --step save_betas --paradigm sentences --id M01
+```
+2. Compute RSA alignment between each model layer and each ROI, for each participant (e.g., `M01`) and model (e.g., `gpt2-xl`):
+```
+python rsa.py --step rsa --model gpt2-xl --id M01
+```
+Additional binary arguments for this step:
+ * `--text_only` computes alignment using only the sentence and word cloud paradigms, but not the picture paradigm (needed only for VLMs)
+ * `--permuted` computes alignment for the permuted baseline, where the brain activation values are randomly shuffled between concepts
+ * `--sig_voxels_only` uses only the voxels with statistically significant semantic consistency ($p<0.05$) within each ROI to compute alignment
 
 ## Citation
 
