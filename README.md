@@ -97,8 +97,8 @@ If you use our code or data, please cite:
 @inproceedings{ryskina2025language,
   title={Language models align with brain regions that represent concepts across modalities},
   author={Maria Ryskina and Greta Tuckute and Alexander Fung and Ashley Malkin and Evelina Fedorenko},
-  year={2025},
   booktitle={Second Conference on Language Modeling},
-  url={https://arxiv.org/abs/2508.11536}
+  year={2025},
+  url={https://openreview.net/forum?id=2JohTFaGbW}
 }
 ```
