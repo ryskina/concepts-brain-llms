@@ -2,7 +2,7 @@ Code and data for the paper ["Language models align with brain regions that repr
 
 ## Downloading data
 
-* The per-participant fMRI data (processed with [GLMsingle](https://github.com/cvnlab/GLMsingle/tree/main)) can be downloaded from [this Google Drive link](https://drive.google.com/drive/folders/1td7k_5UbkQ4jsNtt5yqLOB8Cm50GBzLd?usp=sharing) _(warning: large files!)_ <br>
+* The per-participant fMRI data (processed with [GLMsingle](https://github.com/cvnlab/GLMsingle/tree/main)) can be downloaded from [this OneDrive link](https://mitprod-my.sharepoint.com/:f:/g/personal/ryskina_mit_edu/IgAUa4hnxZ8VSacuiXnwGj9sAdOPugV9_j-C2eUGD2xOTTE?e=Bnvr0r) _(warning: large files!)_ <br>
 For the code to run, the `GLMsingle_outputs_M*.tgz` files should be downloaded into `data/` and unzipped: `tar -xvf GLMsingle_outputs_M*.tgz`
 
 * External files required by this code can be downloaded from the following sources:
